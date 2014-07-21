@@ -28,8 +28,7 @@ var rules = {
 pn.watch(personSchema, rules);
 */
 
-var mongoose = require('mongoose'),
-    jsondiffpatch = require('jsondiffpatch'),
+var jsondiffpatch = require('jsondiffpatch'),
     _ = require('underscore');
 
 /*

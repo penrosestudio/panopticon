@@ -11,15 +11,22 @@
     "url": "https://github.com/penrosestudio/panopticon"
   },
   "author": "Penrose Studio Ltd",
-  "contributors": [{
+  "contributors": [
+    {
       "name": "Chris Sugden",
       "email": "chris@penrosestudio.com"
-  }, {
+    },
+    {
       "name": "Jonathan Lister",
       "email": "jonathan@penrosestudio.com"
-  }],
+    }
+  ],
   "license": "MIT",
   "bugs": {
     "url": "https://github.com/penrosestudio/panopticon/issues"
+  },
+  "dependencies": {
+    "jsondiffpatch": "~0.1.8",
+    "underscore": "~1.6.0"
   }
 }
