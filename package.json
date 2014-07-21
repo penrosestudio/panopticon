@@ -1,0 +1,25 @@
+{
+  "name": "panopticon",
+  "version": "0.0.1",
+  "description": "panopticon ==========",
+  "main": "panopticon.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/penrosestudio/panopticon"
+  },
+  "author": "Penrose Studio Ltd",
+  "contributors": [{
+      "name": "Chris Sugden",
+      "email": "chris@penrosestudio.com"
+  }, {
+      "name": "Jonathan Lister",
+      "email": "jonathan@penrosestudio.com"
+  }],
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/penrosestudio/panopticon/issues"
+  }
+}
