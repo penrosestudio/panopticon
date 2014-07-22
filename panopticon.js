@@ -74,10 +74,10 @@ exports.watch = function(schema, rules) {
 
             /*
              * getNewValue()
-             * <diffItem> - array representing diff of item. 
-             *            - Length 1 is addition [new]
-             *            - Length 2 is update [old, new]
-             *            - Length 3 is deletion [old, 0, 0]
+             *
+             * Returns the new value of a document property
+             *
+             * @param {Array} diffItem representing change to property (see jsondiffpatch)
              */ 
             function getNewValue(diffItem){
                 if (!_.isArray(diffItem)) {
@@ -90,11 +90,14 @@ exports.watch = function(schema, rules) {
             }
             /*
              * applyRules()
-             * <rules>
-             * <diff>
+             *
+             * Calls rules functions
+             *
+             * @param {Object} rules the functions to call when paths in diff
+             * @param {Object} diff the diff between the old and new document
              * 
-             * <throws> TypeError if <diff> is array (rule does not reflect model structure)
-             * <throws> TypeError if <rules> contains an array (invalid)
+             * @throws TypeError if diff is array (rule does not reflect model structure)
+             * @throws TypeError if rules contains an array (invalid)
              */
             function applyRules(rules, diff) {
                 if (_.isArray(diff)) { 
