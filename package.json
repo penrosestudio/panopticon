@@ -28,5 +28,8 @@
   "dependencies": {
     "jsondiffpatch": "~0.1.8",
     "underscore": "~1.6.0"
+  },
+  "devDependencies": {
+    "mongoose": "^3.8.13"
   }
 }
