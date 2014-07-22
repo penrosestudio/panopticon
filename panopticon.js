@@ -15,10 +15,7 @@ var rules = {
     'name': function(newValue) {
         this // the document at the point of post-save
     },
-    'email': {
-        'surname': function() {
-            create new audit item when person changes their email.surname;
-        }
+    'email': function() {
     },
     'pets': {
         'name': function() {}
@@ -52,7 +49,7 @@ exports.watch = function(schema, rules) {
             pets: {
                 name: ['berty', 'fred']
             },
-            email: [oldEmail, newEmail].surname
+            email: [oldEmail, newEmail]
         }
     */
     schema.post('save', function () {
