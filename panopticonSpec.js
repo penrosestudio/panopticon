@@ -28,7 +28,8 @@ var personSchema = mongoose.Schema({
   name: String,
   email: String,
   address: {
-    line1: String
+    line1: String,
+    line2: String
   },
   pets: [{
     name: String
@@ -37,6 +38,10 @@ var personSchema = mongoose.Schema({
 var rules = {
     'name': function() {},
     'email': function() {},
+    'address': {
+        line1: function() {},
+        line2: function() {}
+    },
     'pets': {
         'name': function() {}
     }
@@ -63,7 +68,10 @@ describe("Panopticon", function() {
 
         beforeEach(function(done){
             Person.create({
-                name: 'Adam'
+                name: 'Adam',
+                address: {
+                    line1: '123 Street Lane'
+                }
             }, function(err, p){
                 // Get for 'init'
                 Person.findById(p.id, function(err, p){
@@ -95,6 +103,31 @@ describe("Panopticon", function() {
                 person.name = null;
                 person.save(function(err, person){
                     expect(rules.name).toHaveBeenCalledWith(null);
+                    done();
+                });
+            });
+
+            it("nested property addition", function(done){
+                spyOn(rules.address, 'line2');
+                person.address.line2 = 'Townville';
+                person.save(function(err, person){
+                    expect(rules.address.line2).toHaveBeenCalledWith('Townville');
+                    done();
+                });
+            });
+            it("nested property update", function(done){
+                spyOn(rules.address, 'line1');
+                person.address.line1 = '56 Another Street';
+                person.save(function(err, person){
+                    expect(rules.address.line1).toHaveBeenCalledWith('56 Another Street');
+                    done();
+                });
+            });
+            it("nested property deletion", function(done){
+                spyOn(rules.address, 'line1');
+                person.address.line1 = null;
+                person.save(function(err, person){
+                    expect(rules.address.line1).toHaveBeenCalledWith(null);
                     done();
                 });
             });
