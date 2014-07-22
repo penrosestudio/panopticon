@@ -31,10 +31,13 @@ var personSchema = mongoose.Schema({
     line1: String,
     line2: String
   },
+  cities_visited: [String],
   pets: [{
-    name: String
+    name: String,
+    age: Number
   }]
 });
+
 var rules = {
     'name': function() {},
     'email': function() {},
@@ -42,6 +45,7 @@ var rules = {
         line1: function() {},
         line2: function() {}
     },
+    'cities_visited': function() {},
     'pets': {
         'name': function() {}
     }
@@ -71,7 +75,9 @@ describe("Panopticon", function() {
                 name: 'Adam',
                 address: {
                     line1: '123 Street Lane'
-                }
+                },
+                pets: [{name: 'Fido', age: 4}, 
+                       {name: 'Lucy', age: 8}]
             }, function(err, p){
                 // Get for 'init'
                 Person.findById(p.id, function(err, p){
@@ -128,6 +134,33 @@ describe("Panopticon", function() {
                 person.address.line1 = null;
                 person.save(function(err, person){
                     expect(rules.address.line1).toHaveBeenCalledWith(null);
+                    done();
+                });
+            });
+
+            xit("native array item addition", function(done){
+                spyOn(rules, 'cities_visited');
+                person.cities_visited = ['Paris'];
+                person.save(function(err, person){
+                    expect(rules.cities_visited).toHaveBeenCalledWith('Paris');
+                    done();
+                });
+            });
+
+            xit("object array item addition", function(done){
+                spyOn(rules, 'pets');
+                person.pets.push({name: 'Coco'});
+                person.save(function(err, person){
+                    expect(rules.pets).toHaveBeenCalledWith({name: 'Coco'});
+                    done();
+                });
+            });
+
+            it("object array item change", function(done){
+                spyOn(rules.pets, 'name');
+                person.pets[1].name = 'Coco';
+                person.save(function(err, person){
+                    expect(rules.pets.name).toHaveBeenCalledWith('Coco', 1);
                     done();
                 });
             });

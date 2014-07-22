@@ -60,7 +60,7 @@ exports.watch = function(schema, rules) {
             var differ = jsondiffpatch.create({
                 // this is so the differ can tell what has changed for arrays of objects
                 objectHash: function(obj) {
-                    return obj.name || obj.id || obj._id || obj._id || JSON.stringify(obj);
+                    return obj.id || obj._id || obj._id || JSON.stringify(obj);
                 }
             });
             var diff = differ.diff(original, updated);
@@ -85,6 +85,12 @@ exports.watch = function(schema, rules) {
                 }
                 return _.last(diffItem);
             }
+            function isDiffArray(diff) {
+              return diff._t === 'a';
+            }
+            function isArrayMarker(key) {
+              return key === '_t';
+            }
             /*
              * applyRules()
              *
@@ -96,9 +102,18 @@ exports.watch = function(schema, rules) {
              * @throws TypeError if diff is array (rule does not reflect model structure)
              * @throws TypeError if rules contains an array (invalid)
              */
-            function applyRules(rules, diff) {
+            function applyRules(rules, diff, arrayIndex) {
                 if (_.isArray(diff)) { 
                     throw new TypeError('diff cannot be an array') 
+                }
+
+                if (isDiffArray(diff)) {
+                  _(diff).each(function(arrayItemDiff, key){
+                    if (!isArrayMarker(key)) {
+                      applyRules(rules, arrayItemDiff, parseInt(key));
+                    }
+                  });
+                  return;
                 }
                 
                 _(rules).each(function(rule, key){
@@ -110,7 +125,11 @@ exports.watch = function(schema, rules) {
                     if (diffItem) {
                         if (typeof rule === 'function') {
                             newValue = getNewValue(diffItem);
-                            rule.call(doc, newValue);            
+                            if (arrayIndex) {
+                              rule.call(doc, newValue, arrayIndex);            
+                            } else {
+                              rule.call(doc, newValue);
+                            }
                         } else if (_.isObject(rule)) {
                             applyRules(rule, diffItem);    
                         }
