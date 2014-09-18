@@ -29,6 +29,57 @@ var jsondiffpatch = require('jsondiffpatch'),
     _ = require('underscore');
 
 /*
+ * getNewValue()
+ *
+ * Returns the new value of a document property
+ *
+ * @param {Array} diffItem representing change to property (see jsondiffpatch)
+ */ 
+function getNewValue(diffItem){
+    if (!_.isArray(diffItem)) {
+        throw new TypeError('diffItem must be an array');
+    }
+    if (diffItem.length === 3) {
+        return null;
+    }
+    return _.last(diffItem);
+};
+
+var isDiffArray = function(diff) {
+  return diff._t === 'a';
+};
+
+/*
+ * applyRules()
+ *
+ * Calls rules functions
+ *
+ * @param {Object} doc the document just saved
+ * @param {Object} rules the functions to call when paths in diff
+ * @param {Object} diff the diff between the old and new document
+ * 
+ * @throws TypeError if diff is array (rule does not reflect model structure)
+ * @throws TypeError if rules contains an array (invalid)
+ */
+var applyRules = function(doc, rules, diff, arrayIndex) {
+  if (_.isArray(diff)) { 
+      throw new TypeError('diff cannot be an array') 
+  }
+
+  _(diff).each(function(diffItem, key){
+    
+    if (typeof rules[key] === 'function') {
+      newValue = isDiffArray(diffItem) ? diffItem : getNewValue(diffItem);
+      var rule = rules[key];
+      rule.call(doc, newValue);
+    } else if (_.isObject(rules[key])) {
+      applyRules(doc, rules[key], diffItem);
+    } 
+
+  });
+};
+
+/*
  * watch()
  * <schema> - a Mongoose schema
  * <rules>  - an object containing watch rules
@@ -64,62 +115,7 @@ exports.watch = function(schema, rules) {
                 }
             });
             var diff = differ.diff(original, updated);
-            // FIRE RULES BEHAVIOURS
-            // iterate over keys of rules
-                // if value is function, call with document (as this) and newValue
-                // if value is object, iterate over value
-
-            /*
-             * getNewValue()
-             *
-             * Returns the new value of a document property
-             *
-             * @param {Array} diffItem representing change to property (see jsondiffpatch)
-             */ 
-            function getNewValue(diffItem){
-                if (!_.isArray(diffItem)) {
-                    throw new TypeError('diffItem must be an array');
-                }
-                if (diffItem.length === 3) {
-                    return null;
-                }
-                return _.last(diffItem);
-            }
-            function isDiffArray(diff) {
-              return diff._t === 'a';
-            }
-            function isArrayMarker(key) {
-              return key === '_t';
-            }
-            /*
-             * applyRules()
-             *
-             * Calls rules functions
-             *
-             * @param {Object} rules the functions to call when paths in diff
-             * @param {Object} diff the diff between the old and new document
-             * 
-             * @throws TypeError if diff is array (rule does not reflect model structure)
-             * @throws TypeError if rules contains an array (invalid)
-             */
-            function applyRules(rules, diff, arrayIndex) {
-                if (_.isArray(diff)) { 
-                    throw new TypeError('diff cannot be an array') 
-                }
-
-                _(diff).each(function(diffItem, key){
-                  
-                  if (typeof rules[key] === 'function') {
-                    newValue = isDiffArray(diffItem) ? diffItem : getNewValue(diffItem);
-                    var rule = rules[key];
-                    rule.call(doc, newValue);
-                  } else if (_.isObject(rules[key])) {
-                    applyRules(rules[key], diffItem);
-                  } 
-
-                });
-            }
-            applyRules(rules, diff);            
+            applyRules(doc, rules, diff);            
         }
     });
 };
