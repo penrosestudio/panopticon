@@ -1,30 +1,3 @@
-/*
-Example schema:
-
-var personSchema = mongoose.Schema({
-  name: String,
-  email: String,
-  pets: [{
-    name: String
-  }]
-});
-
-var pn = require('panopticon');
-
-var rules = {
-    'name': function(newValue) {
-        this // the document at the point of post-save
-    },
-    'email': function() {
-    },
-    'pets': {
-        'name': function() {}
-    }
-};
-
-pn.watch(personSchema, rules);
-*/
-
 var jsondiffpatch = require('jsondiffpatch'),
     _ = require('underscore');
 
