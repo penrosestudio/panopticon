@@ -30,5 +30,5 @@ var rules = {
     }
 };
 
-pn.watch(personSchema, rules);
+panopticon.watch(personSchema, rules);
 */
