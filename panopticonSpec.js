@@ -148,20 +148,12 @@ describe("Panopticon", function() {
                 });
             });
 
-            xit("object array item addition", function(done){
+            it("object array item addition - returning diff", function(done){
                 spyOn(rules, 'pets');
                 person.pets.push({name: 'Coco'});
+                var id = person.pets[person.pets.length - 1]._id.toString();
                 person.save(function(err, person){
-                    expect(rules.pets).toHaveBeenCalledWith({name: 'Coco'});
-                    done();
-                });
-            });
-
-            xit("object array item change", function(done){
-                spyOn(rules.pets, 'name');
-                person.pets[1].name = 'Coco';
-                person.save(function(err, person){
-                    expect(rules.pets.name).toHaveBeenCalledWith('Coco', 1);
+                    expect(rules.pets).toHaveBeenCalledWith({'_t': 'a', '2': [{name: 'Coco', _id: id}]});
                     done();
                 });
             });
