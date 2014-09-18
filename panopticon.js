@@ -107,34 +107,17 @@ exports.watch = function(schema, rules) {
                     throw new TypeError('diff cannot be an array') 
                 }
 
-                if (isDiffArray(diff)) {
-                  _(diff).each(function(arrayItemDiff, key){
-                    if (!isArrayMarker(key)) {
-                      applyRules(rules, arrayItemDiff, parseInt(key));
-                    }
-                  });
-                  return;
-                }
-                
-                _(rules).each(function(rule, key){
-                    if(_.isArray(rule)) {
-                        throw new TypeError('panopticon rule cannot be an array');
-                    }
-                
-                    var diffItem = diff[key];
-                    if (diffItem) {
-                        if (typeof rule === 'function') {
-                            newValue = getNewValue(diffItem);
-                            if (arrayIndex) {
-                              rule.call(doc, newValue, arrayIndex);            
-                            } else {
-                              rule.call(doc, newValue);
-                            }
-                        } else if (_.isObject(rule)) {
-                            applyRules(rule, diffItem);    
-                        }
-                    }
-                }); 
+                _(diff).each(function(diffItem, key){
+                  
+                  if (typeof rules[key] === 'function') {
+                    newValue = isDiffArray(diffItem) ? diffItem : getNewValue(diffItem);
+                    var rule = rules[key];
+                    rule.call(doc, newValue);
+                  } else if (_.isObject(rules[key])) {
+                    applyRules(rules[key], diffItem);
+                  } 
+
+                });
             }
             applyRules(rules, diff);            
         }

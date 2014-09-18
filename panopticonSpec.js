@@ -76,6 +76,7 @@ describe("Panopticon", function() {
                 address: {
                     line1: '123 Street Lane'
                 },
+                cities_visited: ['Copenhagen'],
                 pets: [{name: 'Fido', age: 4}, 
                        {name: 'Lucy', age: 8}]
             }, function(err, p){
@@ -138,11 +139,11 @@ describe("Panopticon", function() {
                 });
             });
 
-            xit("native array item addition", function(done){
+            it("array item addition - returning diff", function(done){
                 spyOn(rules, 'cities_visited');
-                person.cities_visited = ['Paris'];
+                person.cities_visited.push('Paris');
                 person.save(function(err, person){
-                    expect(rules.cities_visited).toHaveBeenCalledWith('Paris');
+                    expect(rules.cities_visited).toHaveBeenCalledWith({'_t': 'a', '1': ['Paris']});
                     done();
                 });
             });
@@ -156,7 +157,7 @@ describe("Panopticon", function() {
                 });
             });
 
-            it("object array item change", function(done){
+            xit("object array item change", function(done){
                 spyOn(rules.pets, 'name');
                 person.pets[1].name = 'Coco';
                 person.save(function(err, person){
